@@ -6,6 +6,12 @@ const Notice = require("../model/notice")
 
 let responseData;
 
+const TODOSORT = {
+  datetime: -1,
+  priority: -1,
+  finish: -1
+}
+
 verifyTodo = function (req, res, next) {
   const todostr = req.body.todostr
   if (todostr.trim().length === 0) {
@@ -46,11 +52,7 @@ router.get("/", function (req, res, next) {
   const userid = req.query.id;
   Todo.find({
     user: userid
-  }).sort({
-    finish: -1,
-    priority: -1,
-    datetime: -1
-  }).exec((err, data) => {
+  }).sort(TODOSORT).exec((err, data) => {
     if (err) next(err)
     res.json(todoFormat(data))
   })
@@ -58,6 +60,10 @@ router.get("/", function (req, res, next) {
 
 /**
  * add todo
+ * route
+ * 验证函数
+ * 添加todo的异步函数
+ * 获取todolist 的异步函数
  */
 router.post("/", verifyTodo, function (req, res, next) {
   console.log(req.body)
@@ -94,11 +100,7 @@ router.post("/", verifyTodo, function (req, res, next) {
   const userid = req.body.user
   Todo.find({
     user: userid
-  }).sort({
-    finish: -1,
-    priority: -1,
-    datetime: -1
-  }).exec((err, data) => {
+  }).sort(TODOSORT).exec((err, data) => {
     if (err) {
       responseData.code = 500
       responseData.message = err
