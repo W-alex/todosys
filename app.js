@@ -28,6 +28,18 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/user', require('./routes/user'))
 app.use('/todo', require('./routes/todo'))
+app.use('/notice', require('./routes/notice'))
+app.use("/project", require('./routes/project'))
+
+app.use((err, req, res, next) => {
+  console.log(err)
+  const response = {
+    code: 500,
+    message: "内部错误！"
+  }
+  res.json(response)
+  next()
+})
 
 mongoose.connect("mongodb://localhost:27017/todosys", function (err) {
   if (err) {

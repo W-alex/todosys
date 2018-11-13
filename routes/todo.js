@@ -1,10 +1,18 @@
 const express = require("express")
 const router = express.Router()
 const Todo = require('../model/todo')
-const User = require('../model/user')
 const utils = require("../util")
+const Notice = require("../model/notice")
 
 let responseData;
+
+verifyTodo = function (req, res, next) {
+  const todostr = req.body.todostr
+  if (todostr.trim().length === 0) {
+    next(err)
+  }
+  next()
+}
 
 todoFormat = (todos) => {
   return todos.map(item => {
@@ -51,7 +59,8 @@ router.get("/", function (req, res, next) {
 /**
  * add todo
  */
-router.post("/", function (req, res, next) {
+router.post("/", verifyTodo, function (req, res, next) {
+  console.log(req.body)
   const todo = new Todo({
     todoStr: req.body.todostr,
     user: req.body.user,
@@ -62,7 +71,24 @@ router.post("/", function (req, res, next) {
       responseData.message = "internal error!"
       res.json(responseData)
     }
-    next()
+    // 添加通知
+    console.log(data)
+    if (req.body.notice) {
+      const notice = new Notice({
+        to: req.body.notice,
+        from: req.body.user,
+        todo: data._id
+      })
+      notice.save().then(data => {
+        if (!data) {
+          responseData.code = 500
+          res.json(res)
+        }
+        next()
+      })
+    } else {
+      next()
+    }
   })
 }, function (req, res) {
   const userid = req.body.user
