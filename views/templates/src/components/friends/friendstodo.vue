@@ -36,9 +36,9 @@ export default({
     }
   },
   created: function () {
-    this.$http.get(this.$global.server + '/todo?id=' + this.uid).then((res) => {
-      this.todolist = res.data
-      this.show = res.data
+    this.$http.get(this.$global.server + '/todo/' + this.uid).then((res) => {
+      this.todolist = res.data.message
+      this.show = res.data.message
     })
   },
   methods: {

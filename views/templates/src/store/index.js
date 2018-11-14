@@ -23,7 +23,7 @@ const store = new Vuex.Store({
   },
   actions: {
     saveUser: function (context, user) {
-      context.commit("setId", user._id);
+      context.commit("setId", user.id);
       context.commit("setUser", user.username, user.userid)
     }
   }

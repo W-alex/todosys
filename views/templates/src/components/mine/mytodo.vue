@@ -66,9 +66,9 @@ export default({
       return 'checkbox' + index
     },
     getList: function () {
-      this.$http.get(this.$global.server + '/todo?id=' + this.uid).then(res => {
-        this.todolist = res.data
-        this.show = res.data
+      this.$http.get(this.$global.server + '/todo/' + this.uid).then(res => {
+        this.todolist = res.data.message
+        this.show = res.data.message
       })
     },
     getPlaceHolder: function () {
@@ -337,5 +337,8 @@ ul .tools {
 }
 .highlight {
   background-color: lighten(#ead1d4, 10%);
+  .priority b::before {
+    content: '\21E9';
+  }
 }
 </style>
