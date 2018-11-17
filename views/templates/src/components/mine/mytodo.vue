@@ -197,15 +197,15 @@ $main_color: #a77f80;
 $border_color: #965456;
 $font_color: #c2bdc3;
 .mytodo {
-  width: 100%;
-  margin: 0;
+  width: 600px;
+  margin: auto;
   .info {
     background-color: #fff;
   }
   .input {
     height: 20px;
     line-height: 60px;
-    width: 100%;
+    width: 560px;
     font-size: 16px;
     padding: 20px;
     :hover {
@@ -302,6 +302,7 @@ ul {
 }
 // mytodo 最后的工具栏
 ul .tools {
+  width: auto;
   height: 30px;
   line-height: 30px;
   font-size: 14px;

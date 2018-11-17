@@ -60,7 +60,10 @@ $main_color: #a77f80;
 $border_color: #965456;
 $font_color: #c2bdc3;
 .friendstodo {
+  width: 600px;
+  margin: auto;
   .tools {
+    width: 100%;
     background: #fff;
     border: solid 1px #eee;
     height: 30px;
