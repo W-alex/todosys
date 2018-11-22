@@ -41,9 +41,10 @@ exports.getAll = function (req, res, next) {
   })
 }
 
-exports.getByUser = function (res, userid) {
+exports.getByUserAndProject = function (res, userid, projectid, next) {
   Todo.find({
-    user: userid
+    user: userid,
+    project: projectid
   }).sort(TODOSORT).exec((err, data) => {
     if (err) {
       next(err)
@@ -63,21 +64,26 @@ exports.add = function (req, res, next) {
   const todo = new Todo({
     todoStr: req.body.todostr,
     user: req.body.user,
+    project: req.body.project,
+    datetime: new Date()
   });
   todo.save().then((data) => {
     // 添加通知
-    console.log(data)
     if (req.body.notice) {
-      const notice = new Notice({
-        to: req.body.notice,
-        from: req.body.user,
-        todo: data._id
-      })
-      notice.save().exec((err, data) => {
-        if (err) {
-          next(err)
-        }
+      let noticeList = []
+      req.body.notice.forEach(element => {
+        noticeList.push(new Notice({
+          to: element,
+          from: req.body.user,
+          todo: data._id
+        }))
+      });
+      console.log(noticeList + "!!!!!!!!!!!!!!!")
+      Notice.insertMany(noticeList).then((data) => {
+        console.log(data)
         next()
+      }).catch(err => {
+        next(err)
       })
     } else {
       next()

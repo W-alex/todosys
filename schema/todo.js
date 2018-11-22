@@ -17,5 +17,9 @@ module.exports = new Mongoose.Schema({
   user: {
     ref: "user",
     type: Mongoose.Schema.Types.ObjectId
+  },
+  project: {
+    ref: "Project",
+    type: Mongoose.Schema.Types.ObjectId
   }
 })

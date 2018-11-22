@@ -11,7 +11,14 @@ Notice.prototype.toJSON = function () {
 }
 
 exports.count = function (req, res, next) {
-
+  const userid = req.params.id
+  Notice.count({
+    to: userid
+  }).then(data => {
+    res.json(data)
+  }).catch(err => {
+    next(err)
+  })
 }
 
 exports.getAll = function (req, res, next) {

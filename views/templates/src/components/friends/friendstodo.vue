@@ -24,6 +24,9 @@ export default({
     }
   },
   computed: {
+    projectid: function () {
+      return this.$store.state.projectId
+    },
     doneList: function () {
       return this.todolist.filter(item => {
         return item.finish
@@ -36,10 +39,11 @@ export default({
     }
   },
   created: function () {
-    this.$http.get(this.$global.server + '/todo/' + this.uid).then((res) => {
-      this.todolist = res.data.message
-      this.show = res.data.message
-    })
+    this.$http.get(this.$global.server + '/todo/' + this.uid + '?project=' + this.projectid)
+      .then((res) => {
+        this.todolist = res.data.message
+        this.show = res.data.message
+      })
   },
   methods: {
     getDoneList: function () {

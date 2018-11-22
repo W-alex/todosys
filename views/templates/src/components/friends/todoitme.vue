@@ -33,7 +33,7 @@ li {
   }
   .todostr {
     color: $border_color;
-    font-size: 19px;
+    font-size: 17px;
     .delete,
     .priority {
       border: 0px;

@@ -1,10 +1,10 @@
 <template>
   <div class="sidebar">
     <ul>
-      <li><div class="itme">全部</div></li>
-      <li><div class="itme">已完成</div></li>
-      <li><div class="itme">未完成</div></li>
-      <li><div class="itme">@我</div></li>
+      <!-- <li><div class="itme">全部 <span class="count"></span></div></li>
+      <li><div class="itme">已完成<span class="count"></span></div></li>
+      <li><div class="itme">未完成<span class="count"></span></div></li> -->
+      <li><div class="itme">@我<span class="count">{{noticeCount}}</span></div></li>
       <li class="divider"></li>
       <li v-for="project in projects" :key="project.id" @click="chooseProject(project)"><div class="item">{{project.name}}</div></li>
       <li @click="handleAdd"><div class="addProject"><span><i class="el-icon-circle-plus-outline"></i>添加项目</span></div></li>
@@ -42,7 +42,8 @@ export default({
     return {
       addVisible: false,
       friends: [],
-      projects: []
+      projects: [],
+      noticeCount: 0// 通知数量
     }
   },
   computed: {
@@ -58,10 +59,15 @@ export default({
     }
   },
   created: function () {
+    this.getNoticeCount()
     this.getProjectList()
-    console.log(this.projects)
   },
   methods: {
+    getNoticeCount: function () {
+      this.$http.get(this.$global.server + '/notice/count/' + this.uid).then(res => {
+        this.noticeCount = res.data
+      })
+    },
     getProjectList: function () {
       this.$http.get(this.$global.server + '/project/mumbers' + '/' + this.uid).then(res => {
         this.projects = res.data
@@ -124,6 +130,20 @@ export default({
       cursor: pointer;
       :hover {
         text-decoration: underline;
+      }
+      .count {
+        margin-top: 5px;
+        position: absolute;
+        right: 10px;
+        display: inline-block;
+        width: 25px;
+        height: 20px;
+        line-height: 20px;
+        background-color: #965456;
+        color: #fff;
+        border-radius: 40%;
+        text-align: center;
+        font-weight: bold;
       }
     }
     .divider {

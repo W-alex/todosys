@@ -18,9 +18,10 @@ router.use(function (req, res, next) {
 /**
  * 返回指定用户的todolist
  */
-router.get("/:id", function (req, res) {
+router.get("/:id", function (req, res, next) {
   const userid = req.params.id
-  TodoApi.getByUser(res, userid)
+  const projectid = req.query.project
+  TodoApi.getByUserAndProject(res, userid, projectid, next)
 })
 
 /**
@@ -30,9 +31,10 @@ router.get("/:id", function (req, res) {
  * 添加todo的异步函数
  * 获取todolist 的异步函数
  */
-router.post("/", TodoApi.verifyTodo, TodoApi.add, function (req, res) {
+router.post("/", TodoApi.verifyTodo, TodoApi.add, function (req, res, next) {
   const userid = req.body.user
-  TodoApi.getByUser(res, userid)
+  const projectid = req.body.project
+  TodoApi.getByUserAndProject(res, userid, projectid, next)
 })
 
 /**

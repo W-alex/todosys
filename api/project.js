@@ -50,14 +50,16 @@ exports.getByUserID = function (req, res, next) {
   const userid = req.params.userid
   Project.find({
     $or: [{
-      'charger': userid
-    }, {
-      'numbers': {
-        $elemMatch: {
-          $eq: userid
+        'numbers': {
+          $elemMatch: {
+            $eq: userid
+          }
         }
-      }
-    }]
+      },
+      {
+        'charger': userid
+      },
+    ]
   }).exec((err, data) => {
     if (err) {
       console.log(err)
@@ -90,24 +92,25 @@ exports.changeNumber = function (req, res, next) {
   const addNumbers = req.body.addMumber
   const removeNumbers = req.body.removeMumber
   const id = req.body.projectid
+  console.log(addNumbers, removeNumbers + "!!!!!!!!!!!!!")
   Project.findById(id).exec((err, data) => {
     if (err) next(err)
     if (!data) {
       responseData.code = 404
       res.json(responseData)
     }
-    console.log(data)
+    // TODO 
+    // 后台需要判断 当前用户是否是“项目负责人” 只有“项目负责人”才能够修改项目人员
     removeNumbers.forEach(item => {
       data.numbers.splice(data.numbers.indexOf(item), 1)
     })
-    data.numbers.concat(addNumbers)
+    data.numbers = data.numbers.concat(addNumbers)
     data.save().then((project) => {
-      if (!project) {
-        next("error")
-      }
       console.log(project)
       responseData.code = 200
       res.json(responseData)
+    }).catch(err => {
+      next(err)
     })
   })
 }

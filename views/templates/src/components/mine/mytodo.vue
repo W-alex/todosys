@@ -2,13 +2,25 @@
   <div class="mytodo">
     <div class="info">
       <input class="input" type="text" v-model="todostr" @keyup.enter="addTodo" :placeholder='getPlaceHolder()'/>
-      <ul>
+      <div class="notice">
+       <el-dropdown>
+        <span class="el-dropdown-link">通知谁？<i class="el-icon-arrow-down el-icon--right"></i>
+        </span>
+        <el-dropdown-menu slot="dropdown">
+          <el-dropdown-item v-for="item in friends" :key="item" @click.native="handleAddNotice(item)">
+            {{item.username}}
+          </el-dropdown-item>
+        </el-dropdown-menu>
+        </el-dropdown>
+      </div>
+      <ul class= "todolist">
         <li v-for="(todo, index) in show" :key="todo.id" :class="todo.priority?'highlight':''">
           <div class="todostr">
             <div class="toggle">
               <input type="checkbox" :id="getFor(index)" @click="changeToDone(todo.id)">
               <label :for="getFor(index)"></label>
             </div>
+
             <span :class="todo.finish?'isDone':''">{{todo.todostr}}</span>
             <div class="datetime">{{todo.datetime}}</div>
             <button class="priority" @click="setPriority(todo.id)"><b></b></button>
@@ -32,18 +44,23 @@ export default({
     return {
       todolist: [],
       todostr: '',
-      show: []
+      show: [],
+      notice: []// 通知的好友
     }
   },
-  created: function () {
-    this.getList()
-  },
+  props: ['friends'],
+  // created: function () {
+  //   this.getList()
+  // },
   computed: {
     uid: function () {
       return this.$store.state.id
     },
     username: function () {
       return this.$store.state.username
+    },
+    projectId: function () {
+      return this.$store.state.projectId
     },
     projectName: function () {
       return this.$store.state.projectName
@@ -64,15 +81,21 @@ export default({
       }
     }
   },
+  watch: {
+    projectId: function (newValue) {
+      this.getList()
+    }
+  },
   methods: {
     getFor: function (index) {
       return 'checkbox' + index
     },
     getList: function () {
-      this.$http.get(this.$global.server + '/todo/' + this.uid).then(res => {
-        this.todolist = res.data.message
-        this.show = res.data.message
-      })
+      this.$http.get(this.$global.server + '/todo/' + this.uid + '?project=' + this.projectId)
+        .then(res => {
+          this.todolist = res.data.message
+          this.show = res.data.message
+        })
     },
     getPlaceHolder: function () {
       return '在“' + this.projectName + '”中添加任务'
@@ -85,6 +108,12 @@ export default({
     },
     getAllList: function () {
       this.show = this.todolist
+    },
+    handleAddNotice: function (user) {
+      if (user && user.id && user.username) {
+        this.todostr += '@' + user.username
+        this.notice.push(user.id)
+      }
     },
     changeToDone: function (id) {
       console.log(id)
@@ -132,26 +161,29 @@ export default({
       if (this.todostr.trim().length === 0) {
         return
       }
-      this.$http.post(this.$global.server + '/todo', {todostr: this.todostr, user: this.uid}).then(res => {
-        return new Promise((resolve, reject) => {
-          if (res.data.code === 200) {
-            resolve(res.data.message)
-          }
-        }).then((data) => {
-          this.todostr = ''
-          this.$message({
-            type: 'success',
-            message: '发布成功！'
-          })
-          this.todolist = data
-          this.show = data
-        }).catch(err => {
-          this.$message({
-            type: 'warning',
-            message: err
+      this.$http.post(this.$global.server + '/todo',
+        {todostr: this.todostr, user: this.uid, notice: this.notice, project: this.projectId})
+        .then(res => {
+          return new Promise((resolve, reject) => {
+            if (res.data.code === 200) {
+              resolve(res.data.message)
+            }
+          }).then((data) => {
+            this.todostr = ''
+            this.notice = []
+            this.$message({
+              type: 'success',
+              message: '发布成功！'
+            })
+            this.todolist = data
+            this.show = data
+          }).catch(err => {
+            this.$message({
+              type: 'warning',
+              message: err
+            })
           })
         })
-      })
     },
     setPriority: function (id) {
       this.$http.post(this.$global.server + '/todo/priority', {id: id}).then(res => {
@@ -196,6 +228,7 @@ export default({
 </script>
 
 <style lang="scss" scoped>
+@import url('../../assets/customDropDown.scss');
 $main_color: #a77f80;
 $border_color: #965456;
 $font_color: #c2bdc3;
@@ -206,9 +239,10 @@ $font_color: #c2bdc3;
     background-color: #fff;
   }
   .input {
+    border: none;
     height: 20px;
     line-height: 60px;
-    width: 560px;
+    width: 460px;
     font-size: 16px;
     padding: 20px;
     :hover {
@@ -253,7 +287,7 @@ $font_color: #c2bdc3;
   font-size: 16px;
 }
 // todolist
-ul {
+ul.todolist {
   margin: 0;
   li {
     width: 100%;
@@ -267,7 +301,7 @@ ul {
     }
     .todostr {
       color: $border_color;
-      font-size: 19px;
+      font-size: 17px;
       .delete,
       .priority {
         border: 0px;
@@ -304,7 +338,7 @@ ul {
   }
 }
 // mytodo 最后的工具栏
-ul .tools {
+ul.todolist .tools {
   width: auto;
   height: 30px;
   line-height: 30px;

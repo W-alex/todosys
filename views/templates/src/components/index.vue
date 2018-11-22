@@ -4,7 +4,7 @@
       <template>
         <el-tabs v-model="current"  @tab-click="handleClick">
           <el-tab-pane label="我的" name="my">
-            <my-todo></my-todo>
+            <my-todo :friends="friends"></my-todo>
           </el-tab-pane>
           <el-tab-pane v-for="(item, index) in friends" v-key="item.id"
             :label="item.username" :name="index" :key="item.id">
@@ -73,12 +73,12 @@ export default({
   },
   watch: {
     projectid: function (newValue) {
-      this.getFriends(newValue)
+      this.getFriends()
     }
   },
   methods: {
-    getFriends: function (projectid) {
-      this.$http.get(this.$global.server + '/project/' + projectid + '?userid=' + this.uid).then(res => {
+    getFriends: function () {
+      this.$http.get(this.$global.server + '/project/' + this.projectid + '?userid=' + this.uid).then(res => {
         const data = res.data
         this.friends = data
       })
@@ -95,9 +95,8 @@ export default({
     },
     handleAddNumber: function () {
       this.getMumbers()
-      this.getFriends(this.projectid)
+      this.getFriends()
       this.addMumbers = this.mumbers.filter(item => {
-        console.log(item.id)
         let flag = 0
         this.friends.forEach(ele => {
           console.log(ele.id)
@@ -107,7 +106,6 @@ export default({
         })
         return flag === 0
       })
-      console.log(this.addMumbers)
     },
     handleNumberSubmit: function () {
       this.dialogVisible = false
@@ -122,6 +120,8 @@ export default({
           }
         })
       }).then(() => {
+        this.form.addMumber = []
+        this.form.removeMumber = []
         this.getFriends()
       }).catch(err => {
         this.$message({
