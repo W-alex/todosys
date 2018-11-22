@@ -7,7 +7,9 @@ const store = new Vuex.Store({
   state: {
     username: null,
     id: null,
-    userid: null
+    userid: null,
+    projectId: null,
+    projectName: null
   },
   getters: {
     getId: states => states.id
@@ -19,12 +21,21 @@ const store = new Vuex.Store({
     },
     setId: function (state, id) {
       state.id = id
+    },
+    setCurrentProject: function (state, project) {
+      state.projectId = project.id
+      state.projectName = project.name
     }
   },
   actions: {
     saveUser: function (context, user) {
       context.commit("setId", user.id);
       context.commit("setUser", user.username, user.userid)
+    },
+    changeProject: function (context, project) {
+      if (project != undefined) {
+        context.commit('setCurrentProject', project)
+      }
     }
   }
 })

@@ -8,7 +8,10 @@ Project.prototype.toJSON = function () {
   }
 }
 
-let responseData
+let responseData = {
+  code: 0,
+  message: ""
+}
 const SORT = {
   datetime: -1
 }
@@ -21,16 +24,47 @@ exports.getAll = function (req, res, next) {
     res.json(data)
   })
 }
-
+/**
+ * 根据project id和userid 返回 除了userid 所有的参与项目人员信息「username， _id」
+ */
 exports.get = function (req, res, next) {
   const id = req.params.id
+  const userid = req.query.userid
   Project.findById(id).populate("numbers", "username")
     .populate("charger", "username").exec((err, data) => {
       if (err) {
         next(err)
       }
-      res.json(data)
+      console.log(data)
+      data.numbers.push(data.charger);
+      console.log(data.numbers)
+      res.json(data.numbers.filter(item => {
+        return item._id != userid
+      }))
     })
+}
+/**
+ * 查找有userid 参与的项目：项目负责人 or 项目成员
+ */
+exports.getByUserID = function (req, res, next) {
+  const userid = req.params.userid
+  Project.find({
+    $or: [{
+      'charger': userid
+    }, {
+      'numbers': {
+        $elemMatch: {
+          $eq: userid
+        }
+      }
+    }]
+  }).exec((err, data) => {
+    if (err) {
+      console.log(err)
+      next(err)
+    }
+    res.json(data)
+  })
 }
 
 /**
@@ -38,7 +72,7 @@ exports.get = function (req, res, next) {
  */
 exports.add = function (req, res, next) {
   const project = new Project({
-    charger: req.body.user,
+    charger: req.body.charger,
     numbers: req.body.numbers,
     name: req.body.name
   })
@@ -48,30 +82,33 @@ exports.add = function (req, res, next) {
       res.json(responseData)
     }
     responseData.code = 200
-    responseData.message = data
     res.json(responseData)
   })
 }
 
-exports.addNumber = function (req, res, next) {
-  const addNumbers = req.body.numbers
-  const id = req.body.id
+exports.changeNumber = function (req, res, next) {
+  const addNumbers = req.body.addMumber
+  const removeNumbers = req.body.removeMumber
+  const id = req.body.projectid
   Project.findById(id).exec((err, data) => {
     if (err) next(err)
-    if (data) {
+    if (!data) {
       responseData.code = 404
       res.json(responseData)
     }
+    console.log(data)
+    removeNumbers.forEach(item => {
+      data.numbers.splice(data.numbers.indexOf(item), 1)
+    })
     data.numbers.concat(addNumbers)
-    data.save().populate("numbers", "username")
-      .populate("charger", "username").exec((err, data) => {
-        if (err) {
-          next(err)
-        }
-        responseData.code = 200
-        responseData.message = data
-        res.json(responseData)
-      })
+    data.save().then((project) => {
+      if (!project) {
+        next("error")
+      }
+      console.log(project)
+      responseData.code = 200
+      res.json(responseData)
+    })
   })
 }
 

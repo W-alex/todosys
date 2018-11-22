@@ -1,6 +1,6 @@
 <template>
   <div class="app">
-    <custom-header></custom-header>
+    <customheader></customheader>
     <div class="body">
       <sidebar></sidebar>
       <div class="console">
@@ -11,11 +11,11 @@
 </template>
 
 <script>
-import customHeader from '@/components/header'
+import customheader from '@/components/header'
 import sidebar from '@/components/sidebar'
 export default({
   name: 'app',
-  components: {customHeader, sidebar}
+  components: {customheader, sidebar}
 })
 </script>
 <style lang="scss">

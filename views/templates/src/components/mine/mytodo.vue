@@ -45,6 +45,9 @@ export default({
     username: function () {
       return this.$store.state.username
     },
+    projectName: function () {
+      return this.$store.state.projectName
+    },
     done: function () {
       if (this.todolist.length !== 0) {
         return this.todolist.filter(item => {
@@ -72,7 +75,7 @@ export default({
       })
     },
     getPlaceHolder: function () {
-      return this.username + '你要做什么？'
+      return '在“' + this.projectName + '”中添加任务'
     },
     getDoneList: function () {
       this.show = this.done
