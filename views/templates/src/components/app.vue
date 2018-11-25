@@ -39,10 +39,13 @@ input::-webkit-input-placeholder {
 }
 .app {
   width: 100%;
+  overflow-y: scroll;
   .body {
+    margin-top: 43px;
     display: flex;
     .console {
       flex: 1;
+      margin-left: 220px;
     }
   }
 }

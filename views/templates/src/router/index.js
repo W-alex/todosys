@@ -4,6 +4,8 @@ import app from "@/components/app"
 import index from '@/components/index'
 import login from "@/components/login"
 import register from "@/components/register"
+import notice from "@/components/mine/notice"
+import test from "@/components/test"
 
 Vue.use(Router)
 
@@ -18,6 +20,9 @@ export default new Router({
     children: [{
       path: "index",
       component: index
+    }, {
+      path: "notice",
+      component: notice
     }]
   }, {
     path: "/login",
@@ -27,5 +32,8 @@ export default new Router({
     path: "/register",
     name: "register",
     component: register
+  }, {
+    path: "/test",
+    components: test
   }]
 })

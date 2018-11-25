@@ -38,14 +38,22 @@ export default({
       })
     }
   },
+  watch: {
+    projectid: function () {
+      this.getList()
+    }
+  },
   created: function () {
-    this.$http.get(this.$global.server + '/todo/' + this.uid + '?project=' + this.projectid)
-      .then((res) => {
-        this.todolist = res.data.message
-        this.show = res.data.message
-      })
+    this.getList()
   },
   methods: {
+    getList: function () {
+      this.$http.get(this.$global.server + '/todo/' + this.uid + '?project=' + this.projectid)
+        .then((res) => {
+          this.todolist = res.data.message
+          this.show = res.data.message
+        })
+    },
     getDoneList: function () {
       this.show = this.doneList
     },
@@ -68,40 +76,6 @@ $font_color: #c2bdc3;
   margin: auto;
   .tools {
     width: 100%;
-    background: #fff;
-    border: solid 1px #eee;
-    height: 30px;
-    line-height: 30px;
-    font-size: 14px;
-    color: $main_color;
-    padding: 0 10px;
-    margin: 0;
-    div {
-      display: inline-block;
-      line-height: inherit;
-      margin: 0;
-    }
-    .tool-buttons {
-      margin: 0 40px;
-      button {
-        margin: 0 5px;
-        border-radius: 2px;
-        border: solid $font_color 1px;
-        color: $main_color;
-        cursor: pointer;
-        :hover {
-          color: $border_color;
-          border: $main_color;
-        }
-      }
-    }
-    .remove-buttons {
-      position: absolute;
-      right: 20px;
-      a:hover {
-        color: $border_color;
-      }
-    }
   }
 }
 </style>

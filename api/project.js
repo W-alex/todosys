@@ -1,5 +1,7 @@
 const Project = require("../model/project")
+const Todo = require("../model/todo")
 const util = require("../util")
+
 Project.prototype.toJSON = function () {
   return {
     id: this._id,
@@ -92,7 +94,6 @@ exports.changeNumber = function (req, res, next) {
   const addNumbers = req.body.addMumber
   const removeNumbers = req.body.removeMumber
   const id = req.body.projectid
-  console.log(addNumbers, removeNumbers + "!!!!!!!!!!!!!")
   Project.findById(id).exec((err, data) => {
     if (err) next(err)
     if (!data) {
@@ -122,12 +123,18 @@ exports.delete = function (req, res, next) {
   const id = req.params.id
   Project.deleteOne({
     _id: id
-  }).exec((err, data) => {
-    if (err || !data) {
-      responseData.code = 500
+  }).then(data => {
+    if (!data) {
+      responseData.code = 404
       res.json(responseData)
     }
+    return Todo.deleteMany({
+      project: id
+    })
+  }).then(data => {
     responseData.code = 200
     res.json(responseData)
+  }).catch(err => {
+    next(err)
   })
 }

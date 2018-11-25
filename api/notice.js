@@ -1,5 +1,5 @@
 const Notice = require("../model/notice")
-
+const util = require("../util")
 let responseData
 
 Notice.prototype.toJSON = function () {
@@ -8,6 +8,18 @@ Notice.prototype.toJSON = function () {
     to: this.to.username || "null",
     todo: this.todo.todoStr || "null"
   }
+}
+//将notice 转换成 todo的形式
+function noticeFormat(data) {
+  console.log(data)
+  return data.map(item => {
+    return {
+      todostr: "from:" + item.from.username + "," + item.todo.todoStr,
+      datetime: util.dateFormat(item.todo.datetime),
+      finish: item.todo.finish,
+      priority: false, //在通知界面不显示 priority 因此为false
+    }
+  })
 }
 
 exports.count = function (req, res, next) {
@@ -38,8 +50,7 @@ exports.getByReciever = function (req, res, next) {
   Notice.find({
       to: userid
     }).populate('from', "username")
-    .populate("to", "username")
-    .populate("todo", "todoStr")
+    .populate("todo")
     .exec((err, data) => {
       if (err) {
         next(err)

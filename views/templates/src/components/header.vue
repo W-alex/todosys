@@ -34,6 +34,7 @@ export default({
 
 <style lang='scss' scoped>
 .header {
+  position: fixed;
   width: 100%;
   height: 40px;
   line-height: 40px;

@@ -1,10 +1,14 @@
 <template>
   <div class="sidebar">
     <ul>
-      <!-- <li><div class="itme">全部 <span class="count"></span></div></li>
-      <li><div class="itme">已完成<span class="count"></span></div></li>
-      <li><div class="itme">未完成<span class="count"></span></div></li> -->
-      <li><div class="itme">@我<span class="count">{{noticeCount}}</span></div></li>
+      <li><router-link to="index"><div>
+        主页
+        </div></router-link>
+      </li>
+      <li><router-link to="notice" name="notice">
+        <div>@我<span class="count">{{noticeCount}}</span></div>
+      </router-link></li>
+
       <li class="divider"></li>
       <li v-for="project in projects" :key="project.id" @click="chooseProject(project)"><div class="item">{{project.name}}</div></li>
       <li @click="handleAdd"><div class="addProject"><span><i class="el-icon-circle-plus-outline"></i>添加项目</span></div></li>
@@ -20,7 +24,8 @@
         </el-form-item>
         <el-form-item label="添加成员:" >
           <el-checkbox-group v-model="project.numbers">
-            <el-checkbox v-for="item in friends" :key="item.id"
+            <el-checkbox v-for="item in friends"
+              :key="item.id"
               :label="item.id"
               name="numbers">{{item.username}}
             </el-checkbox>
@@ -43,19 +48,17 @@ export default({
       addVisible: false,
       friends: [],
       projects: [],
+      project: {
+        name: undefined,
+        numbers: [],
+        charger: undefined
+      },
       noticeCount: 0// 通知数量
     }
   },
   computed: {
     uid: function () {
       return this.$store.state.id
-    },
-    project: function () {
-      return {
-        name: undefined,
-        numbers: [],
-        charger: this.uid
-      }
     }
   },
   created: function () {
@@ -83,6 +86,7 @@ export default({
       this.$http.get(this.$global.server + '/user/other?id=' + this.uid).then((res) => {
         this.friends = res.data
       })
+      this.project.charger = this.uid
     },
     handleSubmit: function () {
       this.addVisible = false
@@ -95,6 +99,8 @@ export default({
           else reject(res.data.message)
         })
       }).then(() => {
+        this.project.name = undefined
+        this.project.numbers = []
         this.getProjectList()
         this.$message({
           type: 'success',
@@ -113,10 +119,10 @@ export default({
 
 <style lang="scss" scoped>
 .sidebar {
+  position: fixed;
   width: 220px;
   height: calc(100vh - 50px);
   margin: 10px 0 0 -5px;
-  position: relative;
   border-right: solid 1px #eee;
   ul {
     height: 100%;
@@ -132,16 +138,16 @@ export default({
         text-decoration: underline;
       }
       .count {
-        margin-top: 5px;
+        margin-top: 8px;
         position: absolute;
         right: 10px;
         display: inline-block;
-        width: 25px;
+        width: 20px;
         height: 20px;
         line-height: 20px;
         background-color: #965456;
         color: #fff;
-        border-radius: 40%;
+        border-radius: 50%;
         text-align: center;
         font-weight: bold;
       }

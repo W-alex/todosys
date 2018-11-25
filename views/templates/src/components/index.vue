@@ -11,7 +11,8 @@
               <friends-todo :uid="item.id"></friends-todo>
           </el-tab-pane>
         </el-tabs>
-        <button @click="handleAddNumber">成员变更</button>
+        <el-button @click="handleAddNumber" size="small" style="position: fixed;top: 68px;right: 40px;">成员变更</el-button>
+        <div class="projectName"><span>{{projectName}}</span></div>
       </template>
     </div>
     <el-dialog
@@ -52,7 +53,7 @@ export default({
       friends: [], // 同一个项目组中的同事
       mumbers: [], // 系统中所有的同事
 
-      dialogVisible: true,
+      dialogVisible: false,
       form: {
         addMumber: [],
         removeMumber: [],
@@ -142,10 +143,18 @@ $font_color: #c2bdc3;
 .index {
   width: 100%;
   margin: 10px auto;
-  position:a h1 {
+  height: calc(100vh - 60px);
+  a h1 {
     color: $main_color;
     text-align: center;
     font-size: 40px;
+  }
+  .projectName {
+    position: fixed;
+    right: 10px;
+    bottom: 0;
+    color: #ddd;
+    font-size: 30px;
   }
 }
 
