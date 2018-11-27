@@ -72,9 +72,9 @@ export default({
       })
     },
     getProjectList: function () {
-      this.$http.get(this.$global.server + '/project/mumbers' + '/' + this.uid).then(res => {
+      this.$http.get(this.$global.server + '/project/mumbers/' + this.uid).then(res => {
         this.projects = res.data
-        this.$store.dispatch('changeProject', this.projects[0])
+        this.chooseProject(this.projects[0])
       })
     },
     chooseProject: function (project) {

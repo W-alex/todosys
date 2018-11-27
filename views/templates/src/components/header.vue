@@ -17,11 +17,6 @@
 <script>
 export default({
   name: 'header',
-  data: function () {
-    return {
-
-    }
-  },
   computed: {
     username: function () {
       let len = this.$store.state.username.length

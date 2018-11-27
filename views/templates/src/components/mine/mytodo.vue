@@ -1,7 +1,11 @@
 <template>
   <div class="mytodo">
     <div class="info">
-      <input class="input" type="text" v-model="todostr" @keyup.enter="addTodo" :placeholder='getPlaceHolder()'/>
+      <input class="input" type="text"
+        ref="input"
+        v-model="todostr"
+        @keyup.enter="addTodo"
+        :placeholder='getPlaceHolder()'/>
       <div class="notice">
        <el-dropdown>
         <span class="el-dropdown-link">通知谁？<i class="el-icon-arrow-down el-icon--right"></i>
@@ -37,9 +41,11 @@
 
 <script>
 import toolbar from '../toolbar'
+import focus from '../../mixins/focus.js'
 export default({
   name: 'myTodo',
   components: {toolbar},
+  mixins: [focus('input')],
   data: function () {
     return {
       todolist: [],
@@ -49,9 +55,6 @@ export default({
     }
   },
   props: ['friends'],
-  // created: function () {
-  //   this.getList()
-  // },
   computed: {
     uid: function () {
       return this.$store.state.id

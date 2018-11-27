@@ -1,13 +1,16 @@
 <template>
   <div class="test">
+    <custom-header></custom-header>
     <input type="text" v-model="message">
     <span>{{message}}</span>
   </div>
 </template>
 
 <script>
+import CustomHeader from './header'
 export default({
   name: 'test',
+  components: {CustomHeader},
   data: function () {
     return {
       message: 'hello test'

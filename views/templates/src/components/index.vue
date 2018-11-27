@@ -52,7 +52,7 @@ export default({
       current: 'my',
       friends: [], // 同一个项目组中的同事
       mumbers: [], // 系统中所有的同事
-
+      addMumbers: [],
       dialogVisible: false,
       form: {
         addMumber: [],
@@ -74,6 +74,11 @@ export default({
   },
   watch: {
     projectid: function (newValue) {
+      this.getFriends()
+    }
+  },
+  mounted () {
+    if (this.projectid !== null) {
       this.getFriends()
     }
   },
