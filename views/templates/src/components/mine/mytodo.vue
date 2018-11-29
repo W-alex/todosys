@@ -31,8 +31,9 @@
             <button class="delete" @click="deleteTodo(todo.id)"><b></b></button>
           </div>
         </li>
-        <toolbar :length="show.length" :isShow="true"
-          @showAll="getAllList"  @showDone="getDoneList" @showUndo="getUndoList"></toolbar>
+        <toolbar :length="show.length" :isShow="false"
+          @showAll="getAllList"  @showDone="getDoneList" @showUndo="getUndoList"
+         ></toolbar>
 
       </ul>
     </div>
@@ -182,6 +183,7 @@ export default({
       })
     },
     deleteCompelete: function () {
+      alert('yes')
       api.deleteCompelete(this.uid, this.projectId).then(data => {
         this.getList()
       }).catch(err => {

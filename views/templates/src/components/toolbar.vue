@@ -6,7 +6,7 @@
             <button @click="showActive">Active</button>
             <button @click="showCompeted">Competed</button>
             <div class="remove-buttons" v-show="isShow">
-              <a href="" @click="deleteCompelete()">移除所有完成条目</a>
+              <a href="" @click="deleteCompelete">移除所有完成条目</a>
             </div>
           </div>
         </li>
@@ -29,6 +29,9 @@ export default({
     },
     showCompeted: function () {
       this.$emit('showDone')
+    },
+    deleteCompelete: function () {
+      this.$emit('deleteCompelete')
     }
   }
 })

@@ -37,7 +37,7 @@ export function finish(id) {
 
 export function deleteItem(id) {
   return http({
-    url: "/todo?id" + id,
+    url: "/todo?id=" + id,
     method: "delete"
   })
 }

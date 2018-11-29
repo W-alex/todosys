@@ -51,8 +51,8 @@ exports.getByUserAndProject = function (res, userid, projectid, next) {
     } else {
       responseData.code = 200
       responseData.message = data
+      res.json(responseData)
     }
-    res.json(responseData)
   })
 }
 
@@ -149,7 +149,8 @@ exports.delete = function (req, res, next) {
 exports.deleteFinish = function (req, res, next) {
   Todo.deleteMany({
     finish: true,
-    user: req.query.id
+    user: req.query.id,
+    project: req.query.project
   }).then(data => {
     responseData = 200;
     res.json(responseData)
