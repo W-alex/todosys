@@ -39,13 +39,8 @@ export default({
       })
     }
   },
-  watch: {
-    projectid: function () {
-      this.getList()
-    }
-  },
-  updated () {
-    console.log('updated!!!!!!!')
+  created: function () {
+    this.getList()
   },
   methods: {
     getList: function () {

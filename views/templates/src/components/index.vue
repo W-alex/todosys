@@ -2,7 +2,7 @@
   <div >
     <div class="index">
       <template>
-        <el-tabs v-model="current"  @tab-click="handleClick">
+        <el-tabs v-model="current"  @tab-click="handleTabClick">
           <el-tab-pane label="我的" name="my">
             <my-todo :friends="friends"></my-todo>
           </el-tab-pane>
@@ -46,6 +46,7 @@ import friendsTodo from '@/components/friends/friendstodo'
 import other from '@/components/other'
 import * as projectAPI from '@/api/project.js'
 import * as userAPI from '@/api/user.js'
+import {getList} from '@/api/todo.js'
 
 export default({
   name: 'index',
@@ -78,6 +79,7 @@ export default({
   watch: {
     projectid: function (newValue) {
       this.getFriends()
+      this.current = 'my'
     }
   },
   mounted () {
@@ -86,6 +88,11 @@ export default({
     }
   },
   methods: {
+    getTodoList: function (uid) {
+      getList(uid, this.projectid).then(data => {
+        return data
+      })
+    },
     getFriends: function () {
       projectAPI.getFriends(this.uid, this.projectid).then(data => {
         this.friends = data
@@ -109,11 +116,13 @@ export default({
         return flag === 0
       })
     },
-    handleClick: function (tab, event) {
-      console.log(tab)
-      console.log(event)
+    handleTabClick: function (tab, event) {
+      console.log(tab.name)
+      const uid = tab.name
+      if (uid !== 'my') {
+        this.getTodoList(uid)
+      }
     },
-
     handleAddMember: function () {
       this.getAddMembers()
       this.dialogVisible = true
