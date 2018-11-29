@@ -77,7 +77,7 @@ exports.getByUserID = function (req, res, next) {
 exports.add = function (req, res, next) {
   const project = new Project({
     charger: req.body.charger,
-    numbers: req.body.numbers,
+    numbers: req.body.members,
     name: req.body.name
   })
   project.save().then(data => {

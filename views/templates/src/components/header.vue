@@ -29,12 +29,10 @@ export default({
 
 <style lang='scss' scoped>
 .header {
-  position: fixed;
   width: 100%;
   height: 40px;
   line-height: 40px;
   background-color: #fff;
-  margin: -10px;
   padding: 10px;
   border-bottom: solid 1px #a77f80;
 }

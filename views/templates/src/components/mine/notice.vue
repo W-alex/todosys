@@ -11,6 +11,7 @@
 <script>
 import todoitem from '../friends/todoitme'
 import toolbar from '../toolbar'
+import * as noticeAPI from '@/api/notice.js'
 export default({
   name: 'notice',
   components: {todoitem, toolbar},
@@ -36,9 +37,8 @@ export default({
     }
   },
   created: function () {
-    this.$http.get(this.$global.server + '/notice/' + this.uid).then(res => {
-      this.notice = this.show = res.data
-      console.log(res.data)
+    noticeAPI.getList(this.uid).then(data => {
+      this.notice = this.show = data
     })
   },
   methods: {

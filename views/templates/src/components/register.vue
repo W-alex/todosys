@@ -19,6 +19,8 @@
 </template>
 
 <script>
+import * as api from '@/api/user.js'
+
 export default({
   name: 'register',
   data: function () {
@@ -31,21 +33,11 @@ export default({
   },
   methods: {
     register: function () {
-      this.$http.post(this.$global.server + '/register',
-        {userid: this.userid, username: this.username, password: this.password, repassword: this.repassword}).then(res => {
-        const data = res.data
-        return new Promise((resolve, reject) => {
-          if (data.code === 200) {
-            resolve()
-          } else { reject(data) }
-        })
-      }).then(data => {
+      const user = {userid: this.userid, username: this.username, password: this.password, repassword: this.repassword}
+      api.add(user).then(data => {
         this.$router.push('/login')
       }).catch(err => {
-        this.$message({
-          type: 'warning',
-          message: err.code + '-' + err.message
-        })
+        console.log(err)
       })
     }
   }

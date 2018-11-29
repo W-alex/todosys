@@ -1,11 +1,11 @@
 .el-tabs__header {
   width: 100%;
   background-color: #fff;
-  position: fixed;
 }
 
-.el-tab-pane {
-  margin-top: 60px;
+.el-tabs__content {
+  height: 550px;
+  overflow-y: scroll;
 }
 
 .el-tabs__nav-scroll {

@@ -13,6 +13,7 @@
 <script>
 import todoitem from './todoitme'
 import toolbar from '../toolbar'
+import * as api from '../../api/todo.js'
 export default({
   name: 'friendsTodo',
   props: ['uid'],
@@ -43,16 +44,15 @@ export default({
       this.getList()
     }
   },
-  created: function () {
-    this.getList()
+  updated () {
+    console.log('updated!!!!!!!')
   },
   methods: {
     getList: function () {
-      this.$http.get(this.$global.server + '/todo/' + this.uid + '?project=' + this.projectid)
-        .then((res) => {
-          this.todolist = res.data.message
-          this.show = res.data.message
-        })
+      api.getList(this.uid, this.projectid).then((data) => {
+        this.todolist = data.message
+        this.show = data.message
+      })
     },
     getDoneList: function () {
       this.show = this.doneList

@@ -6,12 +6,12 @@
           <el-tab-pane label="我的" name="my">
             <my-todo :friends="friends"></my-todo>
           </el-tab-pane>
-          <el-tab-pane v-for="(item, index) in friends" v-key="item.id"
-            :label="item.username" :name="index" :key="item.id">
+          <el-tab-pane v-for="(item) in friends"
+            :label="item.username" :name="item.id" :key="item.id">
               <friends-todo :uid="item.id"></friends-todo>
           </el-tab-pane>
         </el-tabs>
-        <el-button @click="handleAddNumber" size="small" style="position: fixed;top: 68px;right: 40px;">成员变更</el-button>
+        <el-button @click="handleAddMember" size="small" style="position: absolute;top: 68px;right: 40px;">成员变更</el-button>
         <div class="projectName"><span>{{projectName}}</span></div>
       </template>
     </div>
@@ -21,20 +21,20 @@
       width="50%">
       <el-form>
         <el-form-item label="添加成员:">
-          <el-checkbox-group v-model="form.addMumber">
-            <el-checkbox v-for="item in addMumbers" :key="item.id" :label="item.id" name="addMumber">{{item.username}}</el-checkbox>
+          <el-checkbox-group v-model="form.addMember">
+            <el-checkbox v-for="item in addMembers" :key="item.id" :label="item.id" name="addMember">{{item.username}}</el-checkbox>
           </el-checkbox-group>
         </el-form-item>
         <hr>
         <el-form-item label="移除成员:">
-          <el-checkbox-group v-model="form.removeMumber">
-            <el-checkbox v-for="item in friends" :label="item.id" :key="item.id" name="removeMumber">{{item.username}}</el-checkbox>
+          <el-checkbox-group v-model="form.removeMember">
+            <el-checkbox v-for="item in friends" :label="item.id" :key="item.id" name="removeMember">{{item.username}}</el-checkbox>
           </el-checkbox-group>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false" size="small">取 消</el-button>
-        <el-button  size="small" type="primary" @click="handleNumberSubmit">确 定</el-button>
+        <el-button  size="small" type="primary" @click="handleMemberSubmit">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -44,6 +44,9 @@
 import myTodo from '@/components/mine/mytodo'
 import friendsTodo from '@/components/friends/friendstodo'
 import other from '@/components/other'
+import * as projectAPI from '@/api/project.js'
+import * as userAPI from '@/api/user.js'
+
 export default({
   name: 'index',
   components: {myTodo, friendsTodo, other},
@@ -51,12 +54,12 @@ export default({
     return {
       current: 'my',
       friends: [], // 同一个项目组中的同事
-      mumbers: [], // 系统中所有的同事
-      addMumbers: [],
+      members: [], // 系统中所有的同事
+      addMembers: [],
       dialogVisible: false,
       form: {
-        addMumber: [],
-        removeMumber: [],
+        addMember: [],
+        removeMember: [],
         projectid: undefined
       }
     }
@@ -84,28 +87,21 @@ export default({
   },
   methods: {
     getFriends: function () {
-      this.$http.get(this.$global.server + '/project/' + this.projectid + '?userid=' + this.uid).then(res => {
-        const data = res.data
+      projectAPI.getFriends(this.uid, this.projectid).then(data => {
         this.friends = data
       })
     },
-    getMumbers: function () {
-      this.dialogVisible = true
-      this.$http.get(this.$global.server + '/user/other?id=' + this.uid).then(data => {
-        this.mumbers = data.data
+    getMembers: function () {
+      userAPI.getOthers(this.uid).then(data => {
+        this.members = data
       })
     },
-    handleClick: function (tab, event) {
-      console.log(tab)
-      console.log(event)
-    },
-    handleAddNumber: function () {
-      this.getMumbers()
+    getAddMembers: function () {
+      this.getMembers()
       this.getFriends()
-      this.addMumbers = this.mumbers.filter(item => {
+      this.addMembers = this.members.filter(item => {
         let flag = 0
         this.friends.forEach(ele => {
-          console.log(ele.id)
           if (ele.id === item.id) {
             flag++
           }
@@ -113,27 +109,25 @@ export default({
         return flag === 0
       })
     },
-    handleNumberSubmit: function () {
+    handleClick: function (tab, event) {
+      console.log(tab)
+      console.log(event)
+    },
+
+    handleAddMember: function () {
+      this.getAddMembers()
+      this.dialogVisible = true
+    },
+    handleMemberSubmit: function () {
       this.dialogVisible = false
       this.form.projectid = this.projectid
-      this.$http.post(this.$global.server + '/project/numbers', this.form).then(res => {
-        const data = res.data
-        return new Promise((resolve, reject) => {
-          if (data.code === 200) {
-            resolve()
-          } else {
-            reject(data)
-          }
-        })
-      }).then(() => {
-        this.form.addMumber = []
-        this.form.removeMumber = []
+      // http
+      projectAPI.changeMember(this.form).then((data) => {
+        this.form.addMember = []
+        this.form.removeMember = []
         this.getFriends()
       }).catch(err => {
-        this.$message({
-          type: 'error',
-          message: err.message || '网络链接失败，请重试！'
-        })
+        console.log(err)
       })
     }
   }
@@ -155,7 +149,7 @@ $font_color: #c2bdc3;
     font-size: 40px;
   }
   .projectName {
-    position: fixed;
+    position: absolute;
     right: 10px;
     bottom: 0;
     color: #ddd;

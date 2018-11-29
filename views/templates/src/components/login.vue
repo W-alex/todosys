@@ -16,6 +16,7 @@
 </template>
 
 <script>
+import * as api from '@/api/user.js'
 export default({
   name: 'login',
   data: function () {
@@ -26,25 +27,13 @@ export default({
   },
   methods: {
     login: function () {
-      this.$http.post(this.$global.server + '/login', {userid: this.userid, pwd: this.password}).then(res => {
-        console.log(res.data)
-        return new Promise((resolve, reject) => {
-          if (res.data.code === 200) {
-            // vuex 存储用户信息
-            resolve(res.data.message)
-          } else {
-            reject(res.data.message)
-          }
-        })
-      }).then(user => {
+      const user = {userid: this.userid, pwd: this.password}
+      api.login(user).then(data => {
+        const user = data.message
         this.$router.push('/')
         this.$store.dispatch('saveUser', user)
       }).catch(err => {
         console.log(err)
-        this.$message({
-          type: 'warning',
-          message: err
-        })
       })
     }
   }

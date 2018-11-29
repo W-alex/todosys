@@ -21,6 +21,7 @@ export default({
 <style lang="scss">
 body {
   background-color: #f1edee;
+  margin: 0 -10px 0 0;
 }
 a {
   text-decoration: none;
@@ -41,11 +42,10 @@ input::-webkit-input-placeholder {
   width: 100%;
   overflow-y: scroll;
   .body {
-    margin-top: 43px;
     display: flex;
+    margin-top: -10px;
     .console {
       flex: 1;
-      margin-left: 220px;
     }
   }
 }

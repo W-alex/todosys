@@ -42,6 +42,7 @@
 <script>
 import toolbar from '../toolbar'
 import focus from '../../mixins/focus.js'
+import * as api from '../../api/todo.js'
 export default({
   name: 'myTodo',
   components: {toolbar},
@@ -94,11 +95,11 @@ export default({
       return 'checkbox' + index
     },
     getList: function () {
-      this.$http.get(this.$global.server + '/todo/' + this.uid + '?project=' + this.projectId)
-        .then(res => {
-          this.todolist = res.data.message
-          this.show = res.data.message
-        })
+      api.getList(this.uid, this.projectId).then(res => {
+        console.log(res)
+        this.todolist = res.message
+        this.show = res.message
+      })
     },
     getPlaceHolder: function () {
       return '在“' + this.projectName + '”中添加任务'
@@ -120,15 +121,7 @@ export default({
     },
     changeToDone: function (id) {
       console.log(id)
-      this.$http.post(this.$global.server + '/todo/done', {todo: id}).then(data => {
-        return new Promise((resolve, reject, next) => {
-          if (data.data.code === 200) {
-            resolve(data.data.message)
-          } else {
-            reject(data.data.message)
-          }
-        })
-      }).then(() => {
+      api.finish(id).then(data => {
         return this.getList()
       }).catch(err => {
         this.$message({
@@ -138,16 +131,7 @@ export default({
       })
     },
     deleteTodo: function (id) {
-      this.$http.delete(this.$global.server + '/todo?id=' + id).then(res => {
-        const data = res.data
-        return new Promise((resolve, reject) => {
-          if (data.code === 200) {
-            resolve(data.message)
-          } else {
-            reject(data)
-          }
-        })
-      }).then(message => {
+      api.deleteItem(id).then(data => {
         this.$message({
           type: 'success',
           message: '删除成功！'
@@ -164,41 +148,31 @@ export default({
       if (this.todostr.trim().length === 0) {
         return
       }
-      this.$http.post(this.$global.server + '/todo',
-        {todostr: this.todostr, user: this.uid, notice: this.notice, project: this.projectId})
-        .then(res => {
-          return new Promise((resolve, reject) => {
-            if (res.data.code === 200) {
-              resolve(res.data.message)
-            }
-          }).then((data) => {
-            this.todostr = ''
-            this.notice = []
-            this.$message({
-              type: 'success',
-              message: '发布成功！'
-            })
-            this.todolist = data
-            this.show = data
-          }).catch(err => {
-            this.$message({
-              type: 'warning',
-              message: err
-            })
-          })
+      let todo = {
+        todostr: this.todostr,
+        user: this.uid,
+        notice: this.notice,
+        project: this.projectId
+      }
+      api.add(todo).then((res) => {
+        const data = res.message
+        this.todostr = ''
+        this.notice = []
+        this.$message({
+          type: 'success',
+          message: '发布成功！'
         })
+        this.todolist = data
+        this.show = data
+      }).catch(err => {
+        this.$message({
+          type: 'warning',
+          message: err
+        })
+      })
     },
     setPriority: function (id) {
-      this.$http.post(this.$global.server + '/todo/priority', {id: id}).then(res => {
-        const data = res.data
-        return new Promise((resolve, reject) => {
-          if (data.code === 200) {
-            resolve()
-          } else {
-            reject(data)
-          }
-        })
-      }).then(() => {
+      api.priority(id).then(data => {
         this.getList()
       }).catch(err => {
         this.$message({
@@ -208,15 +182,7 @@ export default({
       })
     },
     deleteCompelete: function () {
-      this.$http.delete(this.$global.server + '/todo/finish?id=' + this.uid).then(res => {
-        const data = res.data
-        return new Promise((resolve, reject) => {
-          if (data.code !== 200) {
-            reject(data)
-          }
-          resolve()
-        })
-      }).then(() => {
+      api.deleteCompelete(this.uid, this.projectId).then(data => {
         this.getList()
       }).catch(err => {
         this.$message({
@@ -225,7 +191,6 @@ export default({
         })
       })
     }
-
   }
 })
 </script>

@@ -23,11 +23,11 @@
           <el-input v-model="project.name"></el-input>
         </el-form-item>
         <el-form-item label="添加成员:" >
-          <el-checkbox-group v-model="project.numbers">
+          <el-checkbox-group v-model="project.members">
             <el-checkbox v-for="item in friends"
               :key="item.id"
               :label="item.id"
-              name="numbers">{{item.username}}
+              name="members">{{item.username}}
             </el-checkbox>
           </el-checkbox-group>
         </el-form-item>
@@ -41,6 +41,10 @@
 </template>
 
 <script>
+import * as projectAPI from '@/api/project.js'
+import * as userAPI from '@/api/user.js'
+import * as noticeAPI from '@/api/notice.js'
+
 export default({
   name: 'sidebar',
   data: function () {
@@ -50,7 +54,7 @@ export default({
       projects: [],
       project: {
         name: undefined,
-        numbers: [],
+        members: [],
         charger: undefined
       },
       noticeCount: 0// 通知数量
@@ -67,13 +71,13 @@ export default({
   },
   methods: {
     getNoticeCount: function () {
-      this.$http.get(this.$global.server + '/notice/count/' + this.uid).then(res => {
-        this.noticeCount = res.data
+      noticeAPI.count(this.uid).then(data => {
+        this.noticeCount = data
       })
     },
     getProjectList: function () {
-      this.$http.get(this.$global.server + '/project/mumbers/' + this.uid).then(res => {
-        this.projects = res.data
+      projectAPI.getList(this.uid).then(data => {
+        this.projects = data
         this.chooseProject(this.projects[0])
       })
     },
@@ -82,9 +86,8 @@ export default({
     },
     handleAdd: function () {
       this.addVisible = true
-
-      this.$http.get(this.$global.server + '/user/other?id=' + this.uid).then((res) => {
-        this.friends = res.data
+      userAPI.getOthers(this.uid).then((data) => {
+        this.friends = data
       })
       this.project.charger = this.uid
     },
@@ -93,24 +96,16 @@ export default({
       if (this.project.name === undefined || this.project.name.trim().length === 0) {
         return false
       }
-      this.$http.post(this.$global.server + '/project', this.project).then((res) => {
-        return new Promise((resolve, reject, next) => {
-          if (res.data.code === 200) resolve()
-          else reject(res.data.message)
-        })
-      }).then(() => {
+      projectAPI.add(this.project).then((data) => {
         this.project.name = undefined
-        this.project.numbers = []
+        this.project.members = []
         this.getProjectList()
         this.$message({
           type: 'success',
           message: '添加成功！'
         })
       }).catch((err) => {
-        this.$message({
-          type: 'warning',
-          message: err || '网落错误，请重试！'
-        })
+        console.log(err)
       })
     }
   }
@@ -119,7 +114,7 @@ export default({
 
 <style lang="scss" scoped>
 .sidebar {
-  position: fixed;
+  position: relative;
   width: 220px;
   height: calc(100vh - 50px);
   margin: 10px 0 0 -5px;
